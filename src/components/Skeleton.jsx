@@ -47,3 +47,8 @@ export function SkeletonDoctorGrid() {
     </div>
   );
 }
+
+export default function Skeleton({ style }) {
+  return <div className="skeleton" style={{ width: '100%', height: 20, borderRadius: 8, ...style }} />;
+}
+

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Building2, CalendarPlus, Clock, MessageSquare, FileText, LogOut, Sun, Moon, Globe, Settings, Menu, X, Pill, FlaskConical } from 'lucide-react';
+import { Home, Building2, CalendarPlus, Clock, MessageSquare, FileText, LogOut, Sun, Moon, Globe, Settings, Menu, X, Pill, FlaskConical, BarChart3, CreditCard, Package, DollarSign, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLang } from '../context/LangContext';
@@ -16,23 +16,36 @@ export default function Sidebar() {
   const isDoctor = user?.role === 'doctor';
   const isClinicOwner = user?.role === 'clinic_owner';
   const isLab = user?.role === 'lab';
-  const isPatient = user?.role === 'patient' || (!isDoctor && !isLab && !isClinicOwner);
+  const isReceptionist = user?.role === 'receptionist';
+  const isPatient = user?.role === 'patient' || (!isDoctor && !isLab && !isClinicOwner && !isReceptionist);
 
   let NAV_ITEMS = [];
 
   if (isClinicOwner) {
     NAV_ITEMS = [
       { to: '/clinic-owner', icon: Building2, label: lang === 'ar' ? 'إدارة العيادة' : 'Clinic Management' },
+      { to: '/owner-dashboard', icon: BarChart3, label: lang === 'ar' ? 'لوحة التحليلات' : 'Analytics Dashboard' },
+      { to: '/billing', icon: CreditCard, label: lang === 'ar' ? 'الفواتير' : 'Billing' },
+      { to: '/inventory', icon: Package, label: lang === 'ar' ? 'المخزون' : 'Inventory' },
+      { to: '/expenses', icon: DollarSign, label: lang === 'ar' ? 'المصاريف' : 'Expenses' },
       { to: '/queue', icon: Clock, label: t('queue') },
+    ];
+  } else if (isReceptionist) {
+    NAV_ITEMS = [
+      { to: '/billing', icon: CreditCard, label: lang === 'ar' ? 'الفواتير والماليات' : 'Billing' },
+      { to: '/book', icon: CalendarPlus, label: lang === 'ar' ? 'حجز موعد' : 'Book Appointment' },
+      { to: '/doctors', icon: Building2, label: lang === 'ar' ? 'الأطباء' : 'Doctors' },
     ];
   } else if (isLab) {
     NAV_ITEMS = [
       { to: '/lab', icon: FlaskConical, label: lang === 'ar' ? 'معمل التحاليل' : 'Lab Portal' },
     ];
   } else if (isDoctor) {
-    // Doctor only sees Queue (their patient list)
+    // Doctor sees Queue, DoctorPerformance & Inventory
     NAV_ITEMS = [
       { to: '/queue', icon: Clock, label: lang === 'ar' ? 'الطابور' : 'Queue' },
+      { to: '/doctor-performance', icon: UserCheck, label: lang === 'ar' ? 'لوحة الأداء' : 'Performance' },
+      { to: '/inventory', icon: Package, label: lang === 'ar' ? 'المخزون' : 'Inventory' },
     ];
   } else {
     // Patient

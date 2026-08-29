@@ -130,7 +130,15 @@ export default function Register() {
     { key: 'password', label: t('password'), ph: t('minChars'), type: 'password' },
   ];
 
-  const fields = role === 'doctor' ? DOCTOR_FIELDS : role === 'lab' ? LAB_FIELDS : role === 'clinic_owner' ? CLINIC_OWNER_FIELDS : PATIENT_FIELDS;
+  const RECEPTIONIST_FIELDS = [
+    { key: 'full_name', label: lang === 'ar' ? 'اسم موظف الاستقبال' : 'Receptionist Name', ph: lang === 'ar' ? 'محمد علي' : 'Mohamed Ali', type: 'text' },
+    { key: 'clinic_email', label: lang === 'ar' ? 'البريد الإلكتروني للعيادة (التي تعمل بها) *' : 'Clinic Email *', ph: 'clinic@mail.com', type: 'email', dir: 'ltr' },
+    { key: 'email', label: lang === 'ar' ? 'البريد الإلكتروني الخاص بالموظف (للدخول)' : 'Receptionist Email (for Login)', ph: 'reception@mail.com', type: 'email', dir: 'ltr' },
+    { key: 'phone_number', label: lang === 'ar' ? 'رقم الهاتف' : 'Phone Number', ph: '01012345678', type: 'text', dir: 'ltr' },
+    { key: 'password', label: t('password'), ph: t('minChars'), type: 'password' },
+  ];
+
+  const fields = role === 'doctor' ? DOCTOR_FIELDS : role === 'lab' ? LAB_FIELDS : role === 'clinic_owner' ? CLINIC_OWNER_FIELDS : role === 'receptionist' ? RECEPTIONIST_FIELDS : PATIENT_FIELDS;
 
   return (
     <div className="auth-page">
@@ -200,6 +208,16 @@ export default function Register() {
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>مالك عيادة (Clinic Owner)</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.5 }}>حساب إداري لإدارة العيادة وإضافة الدكاترة والمعامل والمعلومات الأساسية</div>
+                  </div>
+                </button>
+
+                <button onClick={() => setRole('receptionist')} className="role-option">
+                  <div className="role-option-icon" style={{ background: '#F3E5F5', color: '#7B1FA2' }}>
+                    <User size={24} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>موظف استقبال (Receptionist)</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.5 }}>حساب موظف الاستقبال للحجز وإدارة وتحصيل فواتير العيادة</div>
                   </div>
                 </button>
 

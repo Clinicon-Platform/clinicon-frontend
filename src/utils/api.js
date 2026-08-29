@@ -157,18 +157,67 @@ export const addClinicMember = (data) =>
   request('POST', '/clinic/add-member', data);
 export const getMyLabs = () =>
   request('GET', '/clinic/my-labs');
-export const addLab = (data) =>
-  addClinicMember({
-    role: 'lab',
-    full_name: data.name,
-    email: data.email || `lab_${Date.now()}@clinic.local`,
-    password: data.password || 'Lab@123456',
-    phone_number: data.contact_info || '',
-  });
 export const getPendingClinicRequests = () =>
   request('GET', '/clinic/pending-requests');
 export const approveClinicRequest = (userId) =>
   request('POST', `/clinic/approve-request/${userId}`);
 export const rejectClinicRequest = (userId) =>
   request('POST', `/clinic/reject-request/${userId}`);
+
+// New Endpoints
+export const getMyInvoices = () =>
+  request('GET', '/billing/invoices/me');
+
+export const updateInvoicePayment = (invoiceId, body) =>
+  request('PATCH', `/billing/invoices/${invoiceId}/payment`, body);
+
+export const updateConsultationPrice = (price) =>
+  request('PATCH', '/doctors/me/consultation-price', { consultation_price: price });
+
+export const getSupplies = () =>
+  request('GET', '/inventory/supplies');
+
+export const createSupply = (data) =>
+  request('POST', '/inventory/supplies', data);
+
+export const updateSupply = (id, data) =>
+  request('PATCH', `/inventory/supplies/${id}`, data);
+
+export const recordConsumption = (data) =>
+  request('POST', '/inventory/consumptions', data);
+
+export const getSupplyConsumptions = () =>
+  request('GET', '/inventory/consumptions');
+
+export const createExpense = (data) =>
+  request('POST', '/expenses', data);
+
+export const getExpenses = (filters = {}) => {
+  const query = new URLSearchParams(filters).toString();
+  return request('GET', `/expenses${query ? `?${query}` : ''}`);
+};
+
+export const getOwnerDashboard = (filters = {}) => {
+  const query = new URLSearchParams(filters).toString();
+  return request('GET', `/dashboard/owner${query ? `?${query}` : ''}`);
+};
+
+export const getDoctorDashboard = () =>
+  request('GET', '/dashboard/doctor/me');
+
+export const exportOwnerDashboard = async (format = 'excel') => {
+  const token = localStorage.getItem('token');
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  
+  const res = await fetch(`${BASE}/dashboard/owner/export?format=${format}`, {
+    method: 'GET',
+    headers
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw { status: res.status, ...data };
+  }
+  return await res.blob();
+};
 

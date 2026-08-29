@@ -159,8 +159,15 @@ export default function Book() {
                     <div style={{ fontSize: 15.5, fontWeight: 700 }}>{doc.name}</div>
                     <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 3 }}>{getSpecName(doc.specialization, lang)}</div>
                   </div>
-                  <div style={{ fontSize: 12.5, color: 'var(--text-faint)', flexShrink: 0 }}>
-                    <span className="online-dot" style={{ width: 6, height: 6 }} /> {t('available')}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+                    {doc.consultation_price != null && (
+                      <span style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--primary)' }}>
+                        💲 {doc.consultation_price}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 12, color: 'var(--text-faint)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span className="online-dot" style={{ width: 6, height: 6 }} /> {t('available')}
+                    </span>
                   </div>
                 </button>
               ))}
@@ -185,8 +192,18 @@ export default function Book() {
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>{getSpecName(selectedDoc?.specialization, lang)}</div>
                 </div>
               </div>
-              <button className="btn-secondary" style={{ padding: '6px 14px', fontSize: 12.5 }}
-                onClick={() => { setStep(1); setSelectedClinic(null); }}>{t('change')}</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {selectedDoc?.consultation_price != null && (
+                  <span style={{
+                    fontSize: 14, fontWeight: 800, color: '#2E7D32',
+                    background: '#E8F5E9', padding: '4px 12px', borderRadius: 20
+                  }}>
+                    💲 {selectedDoc.consultation_price} {lang === 'ar' ? 'سعر الكشف' : 'fee'}
+                  </span>
+                )}
+                <button className="btn-secondary" style={{ padding: '6px 14px', fontSize: 12.5 }}
+                  onClick={() => { setStep(1); setSelectedClinic(null); }}>{t('change')}</button>
+              </div>
             </div>
 
             <form onSubmit={goConfirm}>
@@ -253,6 +270,7 @@ export default function Book() {
               {[
                 [t('clinicLabel'), getSpecName(selectedDoc?.specialization, lang)],
                 [t('doctorLabel'), selectedDoc?.name],
+                [lang === 'ar' ? 'سعر الكشف' : 'Consultation Fee', selectedDoc?.consultation_price != null ? `💲 ${selectedDoc.consultation_price}` : (lang === 'ar' ? 'غير محدد' : 'Not set')],
                 [t('nameLabel'), name],
                 [t('mobileLabel'), phone],
                 ['تاريخ الموعد', selectedDate],

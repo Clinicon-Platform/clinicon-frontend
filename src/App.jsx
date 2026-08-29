@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { useLang } from './context/LangContext';
 import Sidebar from './components/Sidebar';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -15,6 +16,11 @@ import Medications from './pages/Medications';
 import Lab from './pages/Lab';
 
 import ClinicOwner from './pages/ClinicOwner';
+import OwnerDashboard from './pages/OwnerDashboard';
+import Billing from './pages/Billing';
+import Inventory from './pages/Inventory';
+import Expenses from './pages/Expenses';
+import DoctorPerformance from './pages/DoctorPerformance';
 
 // Helper to determine role default landing page
 function getRoleDefaultPath(role) {
@@ -65,6 +71,26 @@ function AppLayout() {
       title: lang === 'ar' ? 'إدارة العيادة' : 'Clinic Management',
       sub: lang === 'ar' ? 'إدارة الدكاترة والمعامل والمعلومات الأساسية' : 'Manage doctors, labs & clinic info'
     },
+    '/owner-dashboard': {
+      title: lang === 'ar' ? 'لوحة تحليلات مالك العيادة' : 'Owner Performance Dashboard',
+      sub: lang === 'ar' ? 'متابعة أداء الأطباء، الإيرادات والصافي' : 'Monitor doctor performance & net revenue'
+    },
+    '/billing': {
+      title: lang === 'ar' ? 'الفواتير والمدفوعات' : 'Billing & Invoices',
+      sub: lang === 'ar' ? 'متابعة حالة الفواتير وتحديث طرق الدفع' : 'Track and update invoice payment status'
+    },
+    '/inventory': {
+      title: lang === 'ar' ? 'المخزون والمستلزمات' : 'Inventory & Supplies',
+      sub: lang === 'ar' ? 'متابعة المستلزمات الطبية والكميات' : 'Manage medical supplies and stock levels'
+    },
+    '/expenses': {
+      title: lang === 'ar' ? 'المصاريف والتشغيل' : 'Clinic Expenses',
+      sub: lang === 'ar' ? 'تسجيل ومتابعة مصاريف العيادة' : 'Record and track clinic operational expenses'
+    },
+    '/doctor-performance': {
+      title: lang === 'ar' ? 'أداء الطبيب' : 'Doctor Performance',
+      sub: lang === 'ar' ? 'متابعة الأداء وتحديث سعر الكشف' : 'Track metrics and update consultation fee'
+    },
     '/lab': {
       title: lang === 'ar' ? 'معمل التحاليل' : 'Laboratory Portal',
       sub: lang === 'ar' ? 'رفع وإدارة نتائج تحاليل المرضى' : 'Upload & manage patient lab results'
@@ -85,7 +111,9 @@ function AppLayout() {
           </div>
         </header>
         <main className="main-content">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
@@ -101,10 +129,10 @@ function AppRoutes() {
       <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
       
       <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-        {/* Patient Routes */}
+        {/* Patient & Receptionist Routes */}
         <Route path="/" element={<RoleGuard allowedRoles={['patient', 'doctor']}><Home /></RoleGuard>} />
-        <Route path="/doctors" element={<RoleGuard allowedRoles={['patient']}><Doctors /></RoleGuard>} />
-        <Route path="/book" element={<RoleGuard allowedRoles={['patient']}><Book /></RoleGuard>} />
+        <Route path="/doctors" element={<RoleGuard allowedRoles={['patient', 'receptionist']}><Doctors /></RoleGuard>} />
+        <Route path="/book" element={<RoleGuard allowedRoles={['patient', 'receptionist']}><Book /></RoleGuard>} />
         <Route path="/chat" element={<RoleGuard allowedRoles={['patient']}><Chat /></RoleGuard>} />
         <Route path="/medications" element={<RoleGuard allowedRoles={['patient']}><Medications /></RoleGuard>} />
         <Route path="/records" element={<RoleGuard allowedRoles={['patient']}><Records /></RoleGuard>} />
@@ -112,8 +140,17 @@ function AppRoutes() {
         {/* Shared Patient, Doctor & Clinic Owner Routes */}
         <Route path="/queue" element={<RoleGuard allowedRoles={['patient', 'doctor', 'clinic_owner']}><Queue /></RoleGuard>} />
 
-        {/* Clinic Owner Routes */}
+        {/* Clinic Owner & Receptionist Routes */}
         <Route path="/clinic-owner" element={<RoleGuard allowedRoles={['clinic_owner']}><ClinicOwner /></RoleGuard>} />
+        <Route path="/owner-dashboard" element={<RoleGuard allowedRoles={['clinic_owner']}><OwnerDashboard /></RoleGuard>} />
+        <Route path="/billing" element={<RoleGuard allowedRoles={['clinic_owner', 'receptionist']}><Billing /></RoleGuard>} />
+        <Route path="/expenses" element={<RoleGuard allowedRoles={['clinic_owner']}><Expenses /></RoleGuard>} />
+
+        {/* Shared Clinic Owner & Doctor Routes */}
+        <Route path="/inventory" element={<RoleGuard allowedRoles={['clinic_owner', 'doctor']}><Inventory /></RoleGuard>} />
+
+        {/* Doctor Routes */}
+        <Route path="/doctor-performance" element={<RoleGuard allowedRoles={['doctor']}><DoctorPerformance /></RoleGuard>} />
 
         {/* Laboratory Routes */}
         <Route path="/lab" element={<RoleGuard allowedRoles={['lab']}><Lab /></RoleGuard>} />
